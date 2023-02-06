@@ -48,16 +48,46 @@ func main() {
 			zipCode: 76622,
 		},
 	}
-	jim.updateName("jimmy")
+	jimPointer := &jim
+	jimPointer.updateName("jimmy")
+
+	//IMP NOTE: The above two statements are equivalent to jim.updateName("jimmy")
+	//There is no need to explicitly make an address type variable when our receiver is of type pointer as it will automatically behave as pass by reference
 	jim.print()
 
 }
 
-// reference func -> this basically mean we can call this func with any person type
+// receiver func -> this basically mean we can call this func with any person type
 func (p person) print() {
 	fmt.Printf("%+v", p)
 }
 
+// ************Pass by Value***********
+/*
 func (p person) updateName(newFirstName string) {
-	p.firstName = newFirstName
+	p.firstName = newFirstName //update did not actually take place since p is only a copy of jim
+	//Since go is a pass by value thus it is only updating the value of copy not of the actual var
 }
+*/
+
+// ************Pass by Reference***********
+
+func (pointerToPerson *person) updateName(newFirstName string) {
+	(*pointerToPerson).firstName = newFirstName //must use brackets to enclose pointertype value
+}
+
+/*
+Note:
+1. When there is * in front of a pointer it gives the value of pointer
+2. When there is * in front of a type then it is a description of the type. It means we require a pointer to that type
+3. If we define a receiver with a type of pointer then Go allows us to call the function either with a pointer or the root type. In this case pointerToPerson and Person type both will work with the above function and will actuallly update original value in both case
+*/
+
+//*************Reference v/s Value Types***************
+/*
+Reference Types: Slice, Maps, Channels, pointers, functions -> still makes a copy but pointers are not required to update the original value since they are implemented such that it carry reference to the original vale
+
+For eg. Slices conatin a pointer to head of an underlying array thus even after making a new copy of slice still it is pointing to the same head of array
+
+Value Types: int, float, string, bool, structs -> requires pointers while updating values while passed inside function
+*/
